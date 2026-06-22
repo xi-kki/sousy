@@ -1,9 +1,9 @@
 {
-  "name": "sous-voice-agent",
+  "name": "sousy-voice-agent",
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "🔪 Sous — hands-free voice AI agent for commercial kitchen inventory. Browser Web Speech + Groq LLM. Eclipse design system.",
+  "description": "🔪 Sousy — hands-free voice AI agent for commercial kitchen inventory. Browser Web Speech + Groq LLM. Eclipse design system.",
   "scripts": {
     "dev": "concurrently -n server,client -c green,cyan \"npm:dev:server\" \"npm:dev:client\"",
     "dev:client": "vite",

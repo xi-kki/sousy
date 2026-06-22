@@ -89,14 +89,14 @@ export default function App() {
         <header className="flex items-center justify-between border-b border-graphite pb-5 mb-10">
           <div className="flex items-baseline gap-4">
             <h1 className="font-display text-5xl font-medium tracking-tight text-glow text-electric-mint">
-              SOUS
+              SOUSY
             </h1>
             <span className="font-mono text-xs text-muted-ash tracking-widest hidden sm:inline">
               VOICE LINE COOK · ZERO-WASTE
             </span>
           </div>
           <span className="font-mono text-[10px] tracking-widest text-muted-ash">
-            POWERED BY GROK
+            POWERED BY GROQ
           </span>
         </header>
 
@@ -150,7 +150,7 @@ export default function App() {
         </div>
 
         <footer className="mt-16 pt-5 border-t border-graphite font-mono text-[10px] tracking-widest text-muted-ash">
-          SOUS · A SOUS-CHEF THAT NEVER FORGETS THE WALK-IN. INVENTORY SAVED LOCALLY IN YOUR BROWSER.
+          SOUSY · A SOUS-CHEF THAT NEVER FORGETS THE WALK-IN. INVENTORY SAVED LOCALLY IN YOUR BROWSER.
         </footer>
       </div>
     </div>

@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @file Sous — Express server that proxies voice agent requests to Grok/xAI.
+ * @file Sousy — Express server that proxies voice agent requests to Groq.
  * Serves the built frontend statically and exposes /api/chat for the agent loop.
  */
 
@@ -131,6 +131,6 @@ app.post('/api/chat', async (req, res) => {
 
 app.listen(PORT, () => {
   /* eslint-disable no-console */
-  console.log(`\n  Sous proxy on http://localhost:${PORT}`);
+  console.log(`\n  Sousy proxy on http://localhost:${PORT}`);
   console.log(`  model: ${llmConfig.model}   key: ${llmConfig.apiKey ? 'configured ✓' : 'MISSING ✗'}\n`);
 });

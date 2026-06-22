@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @file Tool definitions and executor for the Sous AI agent.
+ * @file Tool definitions and executor for the Sousy AI agent.
  * Defines the function-calling tools the LLM can use to mutate inventory,
  * and the pure functions that apply each tool call.
  */

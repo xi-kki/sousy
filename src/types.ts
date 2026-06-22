@@ -1,5 +1,5 @@
 /**
- * @file Shared type definitions for the Sous application.
+ * @file Shared type definitions for the Sousy application.
  * Used by both frontend components and the API client.
  */
 
@@ -24,7 +24,7 @@ export interface InventoryItem {
   expiresOn: string | null;
 }
 
-/** Visual state of the Sous agent for UI feedback. */
+/** Visual state of the Sousy agent for UI feedback. */
 export type AgentState = 'idle' | 'listening' | 'thinking' | 'speaking';
 
 /** Kinds of inventory mutations the AI agent can perform. */
@@ -37,7 +37,7 @@ export interface AgentAction {
   detail: string;
 }
 
-/** A single turn in the conversation between the cook and Sous. */
+/** A single turn in the conversation between the cook and Sousy. */
 export interface ChatTurn {
   role: 'user' | 'assistant';
   text: string;

@@ -1,6 +1,6 @@
 // @ts-check
 /**
- * @file System prompt builder for the Sous AI agent.
+ * @file System prompt builder for the Sousy AI agent.
  * Dynamically generates the system prompt with current inventory context.
  */
 
@@ -74,7 +74,7 @@ export function buildSystemPrompt(inv) {
   const soon = expirySummary(inv).filter((e) => e.days <= 2);
   const soonFormatted = formatSoonItems(soon);
 
-  return `You are Sous, a calm, sharp sous-chef voice assistant for a busy commercial kitchen.
+  return `You are Sousy, a calm, sharp sous-chef voice assistant for a busy commercial kitchen.
 The cook's hands are full, so keep spoken replies SHORT (1-2 sentences), concrete, and confirm what you logged.
 Your mission: cut food waste by keeping inventory accurate and pushing the cook to use what expires soonest.
 

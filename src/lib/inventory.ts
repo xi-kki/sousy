@@ -1,6 +1,6 @@
 import type { InventoryItem } from '../types';
 
-const STORAGE_KEY = 'sous.inventory.v1';
+const STORAGE_KEY = 'sousy.inventory.v1';
 
 /**
  * Get today's date as an ISO date string (yyyy-mm-dd) at midnight UTC.

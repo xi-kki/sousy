@@ -4,7 +4,7 @@ import type { ChatResponse, ChatTurn, InventoryItem } from '../types';
 const REQUEST_TIMEOUT_MS = 30_000;
 
 /**
- * Send conversation history and current inventory to the Sous agent backend.
+ * Send conversation history and current inventory to the Sousy agent backend.
  * The backend runs the LLM agent loop and returns an updated inventory + reply.
  *
  * @param history — Previous conversation turns

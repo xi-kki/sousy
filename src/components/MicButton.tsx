@@ -44,7 +44,7 @@ export default function MicButton({ state, supported, onDown, onUp }: MicButtonP
           }
           ${state === 'thinking' ? 'opacity-60 cursor-wait' : 'cursor-pointer'}
           disabled:cursor-not-allowed`}
-        aria-label="Hold to talk to Sous"
+        aria-label="Hold to talk to Sousy"
       >
         {state === 'speaking' ? (
           <div className="flex items-end gap-1 h-12">

@@ -6,7 +6,7 @@ interface TranscriptProps {
 }
 
 /**
- * Displays the conversation history between the cook and Sous.
+ * Displays the conversation history between the cook and Sousy.
  * Shows partial (interim) speech recognition text while the user is still talking.
  */
 export default function Transcript({ turns, partial }: TranscriptProps) {
@@ -24,7 +24,7 @@ export default function Transcript({ turns, partial }: TranscriptProps) {
         {turns.map((t, i) => (
           <div key={i} className={t.role === 'user' ? 'text-canvas-white' : 'text-electric-mint'}>
             <span className="font-mono text-[10px] tracking-widest text-muted-ash block mb-1">
-              {t.role === 'user' ? 'COOK' : 'SOUS'}
+              {t.role === 'user' ? 'COOK' : 'SOUSY'}
             </span>
             <p className="font-mono text-sm leading-relaxed">{t.text}</p>
           </div>

@@ -1,7 +1,7 @@
-# 🔪 SOUS — voice line cook, zero-waste
+# 🔪 SOUSY — voice line cook, zero-waste
 
 A hands-free voice AI agent for commercial kitchens. Cooks have full/dirty hands, so
-inventory never gets logged — and food **rots in the walk-in**. Sous lets you just *say*
+inventory never gets logged — and food **rots in the walk-in**. Sousy lets you just *say*
 what changed ("six crates of tomatoes came in, expire Friday" / "used two kilos of chicken"),
 keeps a live count, and shouts about anything expiring in the next 48h so you cook it
 before you bin it.
