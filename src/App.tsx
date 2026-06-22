@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import type { ChatTurn, InventoryItem } from './types'
+import type { AgentState, ChatTurn, InventoryItem } from './types'
 import { loadInventory, saveInventory } from './lib/inventory'
 import { createRecognizer, speak, speechSupported, stopSpeaking } from './lib/speech'
 import { sendToAgent } from './lib/api'
@@ -7,8 +7,6 @@ import MicButton from './components/MicButton'
 import InventoryGrid from './components/InventoryGrid'
 import WasteRail from './components/WasteRail'
 import Transcript from './components/Transcript'
-
-type AgentState = 'idle' | 'listening' | 'thinking' | 'speaking'
 
 export default function App() {
   const [inventory, setInventory] = useState<InventoryItem[]>(loadInventory)
@@ -21,8 +19,13 @@ export default function App() {
   const supported = speechSupported()
   const recognizerRef = useRef<ReturnType<typeof createRecognizer>>(null)
 
+  // Persist inventory to localStorage whenever it changes
   useEffect(() => {
-    saveInventory(inventory)
+    try {
+      saveInventory(inventory);
+    } catch {
+      // localStorage quota exceeded — non-critical, degrade gracefully
+    }
   }, [inventory])
 
   // prime voices (Chrome loads them async)
@@ -47,12 +50,13 @@ export default function App() {
       setTurns([...nextTurns, { role: 'assistant', text: res.reply }])
       setState('speaking')
       speak(res.reply)
-      // return to idle roughly when speech finishes
-      const ms = Math.min(8000, 1200 + res.reply.length * 55)
-      window.setTimeout(() => setState((s) => (s === 'speaking' ? 'idle' : s)), ms)
-    } catch (e: any) {
-      setError(e.message || 'Something went wrong')
-      setState('idle')
+      // Return to idle roughly when speech finishes
+      const ms = Math.min(8000, 1200 + res.reply.length * 55);
+      window.setTimeout(() => setState((s) => (s === 'speaking' ? 'idle' : s)), ms);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      setError(message);
+      setState('idle');
     }
   }
 

@@ -3,12 +3,13 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Sous — hands-free voice agent that cuts kitchen food waste. Powered by xAI Grok.",
+  "description": "🔪 Sous — hands-free voice AI agent for commercial kitchen inventory. Browser Web Speech + Groq LLM. Eclipse design system.",
   "scripts": {
     "dev": "concurrently -n server,client -c green,cyan \"npm:dev:server\" \"npm:dev:client\"",
     "dev:client": "vite",
     "dev:server": "node server/index.js",
     "build": "tsc -b && vite build",
+    "check": "tsc --noEmit && tsc --project server/jsconfig.json --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {

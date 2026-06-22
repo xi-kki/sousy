@@ -1,12 +1,19 @@
-import type { InventoryItem } from '../types'
-import { byExpiry, daysUntil } from '../lib/inventory'
+import type { InventoryItem } from '../types';
+import { byExpiry, daysUntil } from '../lib/inventory';
 
-/** The point of the product: surface what's about to be wasted, loudest. */
-export default function WasteRail({ inventory }: { inventory: InventoryItem[] }) {
+interface WasteRailProps {
+  inventory: InventoryItem[];
+}
+
+/**
+ * "Use It or Lose It" rail — prominently surfaces items expiring within 2 days.
+ * This is the core food-waste-reduction feature of the app.
+ */
+export default function WasteRail({ inventory }: WasteRailProps) {
   const atRisk = byExpiry(inventory).filter((i) => {
-    const d = daysUntil(i.expiresOn)
-    return d != null && d <= 2
-  })
+    const days = daysUntil(i.expiresOn);
+    return days !== null && days <= 2;
+  });
 
   return (
     <section className="border border-electric-mint/40 bg-electric-mint/5 p-6">
@@ -16,29 +23,29 @@ export default function WasteRail({ inventory }: { inventory: InventoryItem[] })
       </div>
 
       {atRisk.length === 0 ? (
-        <p className="font-mono text-sm text-muted-ash">Nothing expiring in the next 48h. Tight ship. 🔪</p>
+        <p className="font-mono text-sm text-muted-ash">Nothing expiring in the next 48h. Tight ship. &#x1F52A;</p>
       ) : (
         <ul className="space-y-3">
           {atRisk.map((it) => {
-            const d = daysUntil(it.expiresOn)!
-            const urgent = d <= 0
+            const days = daysUntil(it.expiresOn)!;
+            const isUrgent = days <= 0;
             return (
               <li key={it.id} className="flex items-center justify-between gap-3">
                 <span className="font-display text-xl tracking-wide truncate">{it.name.toUpperCase()}</span>
                 <span
                   className={`font-mono text-xs px-3 py-1 rounded-full border whitespace-nowrap ${
-                    urgent
+                    isUrgent
                       ? 'border-danger text-danger'
                       : 'border-warn text-warn'
                   }`}
                 >
-                  {urgent ? 'EXPIRED — USE NOW' : d === 1 ? '1 DAY' : `${d} DAYS`}
+                  {isUrgent ? 'EXPIRED &mdash; USE NOW' : days === 1 ? '1 DAY' : `${days} DAYS`}
                 </span>
               </li>
-            )
+            );
           })}
         </ul>
       )}
     </section>
-  )
+  );
 }
