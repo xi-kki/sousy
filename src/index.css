@@ -1,0 +1,116 @@
+@import 'tailwindcss';
+
+/* ─────────────────────────────────────────────────────────────
+   ECLIPSE design system — "Cosmic Rave Command Center"
+   stark black/white + electric mint glow. High contrast so a
+   chef can read it from across a hot line.
+   ───────────────────────────────────────────────────────────── */
+@theme {
+  --color-midnight-ink: #000000;
+  --color-canvas-white: #ffffff;
+  --color-electric-mint: #a1fea0;
+  --color-muted-ash: #888680;
+  --color-pale-stone: #dfddd6;
+  --color-graphite: #302f2c;
+  --color-danger: #ff5c5c;
+  --color-warn: #ffd84d;
+
+  --font-display: 'Oswald', ui-sans-serif, system-ui, sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+
+  --radius-pill: 100px;
+}
+
+:root {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--color-midnight-ink);
+  color: var(--color-canvas-white);
+  font-family: var(--font-mono);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* condensed monumental headings */
+.font-display {
+  font-family: var(--font-display);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+/* signature electric-mint glow */
+.glow-mint {
+  filter: drop-shadow(0 0 14px rgba(161, 254, 160, 0.55));
+}
+.text-glow {
+  text-shadow: 0 0 18px rgba(161, 254, 160, 0.5);
+}
+
+/* mic pulse while listening */
+@keyframes pulse-ring {
+  0% {
+    box-shadow: 0 0 0 0 rgba(161, 254, 160, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 28px rgba(161, 254, 160, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(161, 254, 160, 0);
+  }
+}
+.listening {
+  animation: pulse-ring 1.4s infinite;
+}
+
+@keyframes bar {
+  0%,
+  100% {
+    transform: scaleY(0.3);
+  }
+  50% {
+    transform: scaleY(1);
+  }
+}
+.eq-bar {
+  transform-origin: bottom;
+  animation: bar 0.9s ease-in-out infinite;
+}
+
+/* faint scanline texture for the "command center" feel */
+.scanlines::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.02) 0px,
+    rgba(255, 255, 255, 0.02) 1px,
+    transparent 1px,
+    transparent 3px
+  );
+  z-index: 50;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-graphite);
+}
