@@ -7,6 +7,7 @@ import MicButton from './components/MicButton'
 import InventoryGrid from './components/InventoryGrid'
 import WasteRail from './components/WasteRail'
 import Transcript from './components/Transcript'
+import RobotHero from './components/RobotHero'
 
 export default function App() {
   const [inventory, setInventory] = useState<InventoryItem[]>(loadInventory)
@@ -102,14 +103,32 @@ export default function App() {
 
         {/* ── hero / mic ── */}
         <div className="grid lg:grid-cols-[1fr_1.1fr] gap-12 items-start">
-          <div className="flex flex-col items-center gap-10 lg:sticky lg:top-8">
+          <div className="flex flex-col items-center gap-6 lg:sticky lg:top-8">
+            {/* 3D Robot Hero */}
+            <RobotHero state={state} />
+
             <p className="font-display text-3xl sm:text-4xl leading-[1.05] text-center max-w-md">
               HANDS FULL?
               <br />
               <span className="text-muted-ash">JUST TELL ME WHAT&nbsp;CHANGED.</span>
             </p>
 
-            <MicButton state={state} supported={supported} onDown={startListening} onUp={stopListening} />
+            {/* "Get Started" button — Sousy points to this! */}
+            <button
+              onClick={() => {
+                document.querySelector('[data-mic-area]')?.scrollIntoView({ behavior: 'smooth' });
+              }}
+              className="get-started-btn"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M5 12h14M12 5l7 7-7 7" />
+              </svg>
+              GET STARTED
+            </button>
+
+            <div data-mic-area>
+              <MicButton state={state} supported={supported} onDown={startListening} onUp={stopListening} />
+            </div>
 
             {/* typed fallback */}
             <form
