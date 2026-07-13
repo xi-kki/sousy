@@ -29,8 +29,8 @@ const PORT = parseInt(process.env.PORT || '3001', 10);
 /** @type {LLMConfig} */
 const llmConfig = {
   apiKey: process.env.GROK_API_KEY || '',
-  baseUrl: process.env.GROK_BASE_URL || 'https://api.x.ai/v1',
-  model: process.env.GROK_MODEL || 'grok-4',
+  baseUrl: process.env.GROK_BASE_URL || 'https://api.groq.com/openai/v1',
+  model: process.env.GROK_MODEL || 'llama-3.3-70b-versatile',
 };
 
 // ── Express setup ──────────────────────────────────────────────
@@ -44,6 +44,96 @@ app.use(express.static(join(__dirname, '..', 'dist')));
 app.get('*', (req, res, next) => {
   if (req.path.startsWith('/api')) return next();
   res.sendFile(join(__dirname, '..', 'dist', 'index.html'));
+});
+
+/**
+ * POST /api/transcribe — Speech-to-text via Groq Whisper.
+ * Accepts multipart/form-data with a 'file' field (WAV/MP3/WebM).
+ * Returns { text: string }.
+ */
+app.post('/api/transcribe', express.raw({ type: 'audio/*', limit: '10mb' }), async (req, res) => {
+  if (!llmConfig.apiKey) {
+    return res.status(500).json({ error: 'GROK_API_KEY not configured' });
+  }
+
+  try {
+    // Forward raw audio to Groq Whisper endpoint
+    const formData = new FormData();
+    const audioBlob = new Blob([req.body], { type: req.headers['content-type'] || 'audio/wav' });
+    formData.append('file', audioBlob, 'recording.wav');
+    formData.append('model', 'whisper-large-v3-turbo');
+
+    const whisperRes = await fetch(
+      `${llmConfig.baseUrl}/audio/transcriptions`,
+      {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${llmConfig.apiKey}` },
+        body: formData,
+      }
+    );
+
+    if (!whisperRes.ok) {
+      const err = await whisperRes.text().catch(() => 'Whisper error');
+      return res.status(502).json({ error: `STT failed: ${err.slice(0, 200)}` });
+    }
+
+    const data = await whisperRes.json();
+    res.json({ text: data.text || '' });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+/**
+ * POST /api/tts — Text-to-speech via Groq PlayAI.
+ * Accepts { text: string, voice?: string }.
+ * Returns audio/wav stream.
+ */
+app.post('/api/tts', async (req, res) => {
+  if (!llmConfig.apiKey) {
+    return res.status(500).json({ error: 'GROK_API_KEY not configured' });
+  }
+
+  try {
+    const { text, voice = 'Arista-PlayAI' } = req.body;
+    if (!text) return res.status(400).json({ error: 'text is required' });
+
+    const ttsRes = await fetch(
+      `${llmConfig.baseUrl}/audio/speech`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${llmConfig.apiKey}`,
+        },
+        body: JSON.stringify({
+          model: 'playai-tts',
+          voice,
+          input: text,
+          response_format: 'wav',
+        }),
+      }
+    );
+
+    if (!ttsRes.ok) {
+      const err = await ttsRes.text().catch(() => 'TTS error');
+      return res.status(502).json({ error: `TTS failed: ${err.slice(0, 200)}` });
+    }
+
+    res.setHeader('Content-Type', 'audio/wav');
+    const reader = ttsRes.body.getReader();
+    const pump = async () => {
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        res.write(value);
+      }
+      res.end();
+    };
+    await pump();
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // ── Routes ─────────────────────────────────────────────────────
@@ -130,7 +220,13 @@ app.post('/api/chat', async (req, res) => {
 // ── Start ──────────────────────────────────────────────────────
 
 app.listen(PORT, () => {
-  /* eslint-disable no-console */
-  console.log(`\n  Sousy proxy on http://localhost:${PORT}`);
-  console.log(`  model: ${llmConfig.model}   key: ${llmConfig.apiKey ? 'configured ✓' : 'MISSING ✗'}\n`);
+  const log = JSON.stringify({
+    level: 'info',
+    ts: new Date().toISOString(),
+    msg: 'server started',
+    port: PORT,
+    model: llmConfig.model,
+    keyConfigured: Boolean(llmConfig.apiKey),
+  });
+  process.stdout.write(log + '\n');
 });
