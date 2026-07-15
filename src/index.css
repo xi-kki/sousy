@@ -32,3 +32,22 @@ html, body, #app {
   background: rgba(255,107,53,0.3);
   color: white;
 }
+
+/* Landing page scrollbar hide */
+.landing-scroll-spacer::-webkit-scrollbar {
+  display: none;
+}
+.landing-scroll-spacer {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Get Started pulse */
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 140, 0, 0.4); }
+  50% { box-shadow: 0 0 0 12px rgba(255, 140, 0, 0); }
+}
+
+.get-started-pulse {
+  animation: pulse-glow 2s ease-in-out infinite;
+}
