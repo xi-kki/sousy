@@ -291,7 +291,7 @@
     })
     .sort((a, b) => (daysUntil(a.expiresOn) || 999) - (daysUntil(b.expiresOn) || 999));
 
-  $: categoryEmoji: Record<string, string> = {
+  const categoryEmoji: Record<string, string> = {
     produce: '🥬', protein: '🥩', dairy: '🧀', dry: '🌾', frozen: '🧊', other: '📦',
   };
 
