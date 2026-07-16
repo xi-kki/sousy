@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sousy — Voice Kitchen Assistant</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    :root{
+      --orange:#FF6B35;--orange-light:#FFB088;--orange-glow:rgba(255,107,53,0.3);
+      --green:#00D4AA;--purple:#6C5CE7;--yellow:#FFD93D;--red:#dc3545;
+      --text:#1a1a2e;--text-dim:rgba(26,26,46,0.6);--text-muted:rgba(26,26,46,0.4);
+      --bg:#fff;--bg-soft:#f8f9fa;--border:rgba(0,0,0,0.08);
+    }
+    html{scroll-behavior:smooth}
+    body{font-family:'Inter Tight',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;line-height:1.6}
+    .container{max-width:1200px;margin:0 auto;padding:0 clamp(1.25rem,4vw,3rem)}
+
+    /* NAV */
+    .nav{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(255,255,255,0.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;height:64px}
+    .nav-logo{font-size:1.375rem;font-weight:900;color:var(--orange)}
+    .nav-links{display:flex;gap:2rem;align-items:center}
+    .nav-links a{color:var(--text-dim);font-weight:500;font-size:0.9rem;transition:color 0.2s;text-decoration:none}
+    .nav-links a:hover{color:var(--text)}
+    .nav-cta{padding:0.5rem 1.25rem;background:var(--orange);color:#fff;border-radius:100px;font-weight:600;border:none;cursor:pointer;font-family:inherit;transition:all 0.3s}
+    .nav-cta:hover{transform:translateY(-1px);box-shadow:0 4px 16px var(--orange-glow)}
+    .nav-toggle{display:none;width:40px;height:40px;background:none;border:none;align-items:center;justify-content:center;cursor:pointer}
+    .nav-toggle i{width:24px;height:24px;color:var(--text)}
+
+    /* HERO */
+    .hero{min-height:100vh;display:flex;align-items:center;padding-top:64px;position:relative;overflow:hidden}
+    .hero-inner{display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center;width:100%}
+    .hero-content{position:relative;z-index:2}
+    .hero-badge{display:inline-flex;align-items:center;gap:0.5rem;padding:0.4rem 0.875rem;background:var(--bg-soft);border:1px solid var(--border);border-radius:100px;font-size:0.8rem;font-weight:500;color:var(--text-dim);margin-bottom:1.5rem}
+    .badge-dot{width:6px;height:6px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .hero-title{font-size:clamp(2.25rem,5vw,3.75rem);font-weight:900;line-height:1.08;margin-bottom:1.25rem;letter-spacing:-0.03em}
+    .hero-title span{color:var(--orange)}
+    .hero-desc{font-size:clamp(1rem,2vw,1.2rem);color:var(--text-dim);line-height:1.7;margin-bottom:2rem;max-width:460px}
+    .hero-buttons{display:flex;flex-wrap:wrap;gap:0.75rem;margin-bottom:2.5rem}
+    .btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 1.75rem;font-size:0.95rem;font-weight:600;border-radius:100px;transition:all 0.3s;cursor:pointer;font-family:inherit;text-decoration:none}
+    .btn i{width:18px;height:18px}
+    .btn-primary{color:#fff;background:var(--orange);border:none}
+    .btn-primary:hover{transform:translateY(-2px);box-shadow:0 8px 24px var(--orange-glow)}
+    .btn-secondary{color:var(--text);background:transparent;border:1px solid var(--border)}
+    .btn-secondary:hover{background:var(--bg-soft);border-color:rgba(0,0,0,0.15)}
+    .hero-proof{display:flex;gap:2rem;padding-top:2rem;border-top:1px solid var(--border)}
+    .proof-value{font-size:1.375rem;font-weight:800;line-height:1.2}
+    .proof-label{font-size:0.75rem;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em}
+
+    /* VIDEO — META MASK CURSOR TRACKING */
+    .hero-visual{position:relative;display:flex;justify-content:center;align-items:center}
+    .video-frame{position:relative;width:100%;max-width:500px;aspect-ratio:4/5;border-radius:24px;overflow:hidden;box-shadow:0 40px 80px rgba(0,0,0,0.15);transition:transform 0.1s ease-out;will-change:transform}
+    .video-frame::before{content:'';position:absolute;inset:-3px;border-radius:27px;background:linear-gradient(135deg,var(--orange),var(--yellow),var(--orange));z-index:-1;opacity:0.5;filter:blur(8px)}
+    .video-frame video{width:120%;height:120%;object-fit:cover;position:absolute;top:-10%;left:-10%;transition:transform 0.15s ease-out;will-change:transform}
+    .video-glow{position:absolute;width:100%;height:100%;border-radius:24px;pointer-events:none;z-index:2;background:radial-gradient(circle at var(--mx,50%) var(--my,50%),var(--orange-glow) 0%,transparent 50%);opacity:0;transition:opacity 0.3s}
+    .video-frame:hover .video-glow{opacity:0.6}
+    .video-label{position:absolute;bottom:1.5rem;left:50%;transform:translateX(-50%);z-index:3;background:rgba(0,0,0,0.7);backdrop-filter:blur(10px);padding:0.5rem 1.25rem;border-radius:100px;font-size:0.85rem;font-weight:600;color:#fff;display:flex;align-items:center;gap:0.5rem}
+    .video-label .dot{width:8px;height:8px;background:var(--green);border-radius:50%;animation:pulse 2s infinite}
+
+    /* SECTIONS */
+    section:not(.hero){padding:clamp(4rem,8vw,8rem) 0}
+    .section-header{text-align:center;margin-bottom:clamp(2.5rem,5vw,4rem)}
+    .section-label{font-size:0.75rem;font-weight:600;color:var(--orange);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:0.75rem}
+    .section-title{font-size:clamp(1.75rem,4vw,2.75rem);font-weight:800;letter-spacing:-0.02em;margin-bottom:1rem}
+    .section-desc{font-size:clamp(1rem,1.5vw,1.125rem);color:var(--text-dim);max-width:560px;margin:0 auto;line-height:1.7}
+    .bg-soft{background:var(--bg-soft)}
+
+    /* CARDS */
+    .card-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.5rem}
+    .card{padding:1.75rem;background:#fff;border-radius:16px;border:1px solid var(--border);transition:all 0.3s}
+    .card:hover{transform:translateY(-4px);box-shadow:0 12px 32px rgba(0,0,0,0.06)}
+    .card-icon{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:1rem}
+    .card-icon.orange{background:#FFF5F0}.card-icon.orange i{width:22px;height:22px;color:var(--orange)}
+    .card-icon.solid{background:var(--orange)}.card-icon.solid i{width:22px;height:22px;color:#fff}
+    .card-title{font-size:1rem;font-weight:700;margin-bottom:0.5rem}
+    .card-desc{font-size:0.9rem;color:var(--text-dim);line-height:1.6;margin-bottom:1rem}
+    .card-stat{font-size:0.8rem;color:var(--orange);font-weight:600;padding-top:0.75rem;border-top:1px solid var(--border)}
+
+    /* STEPS */
+    .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:2rem}
+    .step{text-align:center}
+    .step-num{width:56px;height:56px;border-radius:50%;background:#fff;border:2px solid var(--orange);display:flex;align-items:center;justify-content:center;font-size:1.25rem;font-weight:800;color:var(--orange);margin:0 auto 1.25rem}
+    .step-title{font-size:1rem;font-weight:700;margin-bottom:0.5rem}
+    .step-desc{font-size:0.875rem;color:var(--text-dim);max-width:280px;margin:0 auto}
+
+    /* CTA */
+    .cta-box{max-width:640px;margin:0 auto;padding:clamp(2.5rem,6vw,4rem);background:var(--orange);border-radius:24px;text-align:center;color:#fff}
+    .cta-title{font-size:clamp(1.5rem,3vw,2.25rem);font-weight:800;margin-bottom:0.75rem}
+    .cta-desc{font-size:1rem;opacity:0.9;margin-bottom:2rem;max-width:440px;margin-left:auto;margin-right:auto}
+    .cta-btn{display:inline-flex;align-items:center;gap:0.5rem;padding:0.875rem 2rem;font-size:1rem;font-weight:600;color:var(--orange);background:#fff;border:none;border-radius:100px;cursor:pointer;font-family:inherit;transition:all 0.3s}
+    .cta-btn:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(0,0,0,0.2)}
+    .cta-btn i{width:18px;height:18px}
+
+    /* FOOTER */
+    .footer{padding:2.5rem 0;border-top:1px solid var(--border)}
+    .footer-inner{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem}
+    .footer-logo{font-size:1.125rem;font-weight:800;color:var(--orange)}
+    .footer-text{font-size:0.8rem;color:var(--text-muted)}
+    .footer-links{display:flex;gap:1.5rem}
+    .footer-links a{font-size:0.8rem;color:var(--text-dim);transition:color 0.2s;text-decoration:none}
+    .footer-links a:hover{color:var(--text)}
+
+    /* AGENT VIEW */
+    #agentView{display:none;position:fixed;inset:0;z-index:200;background:#fff}
+    .agent-layout{display:grid;grid-template-columns:1fr 320px;height:100%}
+    .agent-main{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:2rem;position:relative}
+    .agent-back{position:absolute;top:1.5rem;left:1.5rem;display:flex;align-items:center;gap:0.5rem;padding:0.5rem 1rem;background:var(--bg-soft);border:1px solid var(--border);border-radius:100px;font-size:0.85rem;font-weight:500;color:var(--text-dim);cursor:pointer;font-family:inherit;transition:all 0.2s}
+    .agent-back:hover{background:#fff;border-color:rgba(0,0,0,0.15);color:var(--text)}
+    .agent-back i{width:16px;height:16px}
+    .agent-avatar{position:relative;width:200px;height:200px;margin-bottom:1.5rem;border-radius:50%;overflow:hidden}
+    .agent-ring{position:absolute;inset:-14px;border-radius:50%;border:3px solid var(--orange);transition:all 0.3s;pointer-events:none}
+    .agent-avatar video{width:100%;height:100%;object-fit:cover}
+    .agent-status{font-size:1rem;color:var(--text-muted);margin-bottom:0.75rem;transition:color 0.3s}
+    .agent-transcript{font-size:1rem;text-align:center;max-width:420px;min-height:56px;margin-bottom:1.25rem;padding:1rem 1.25rem;background:var(--bg-soft);border-radius:12px;border:1px solid var(--border);line-height:1.5}
+    .agent-mic{width:72px;height:72px;border-radius:50%;background:var(--orange);border:none;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 24px var(--orange-glow);transition:all 0.3s;cursor:pointer;position:relative}
+    .agent-mic i{width:30px;height:30px;color:#fff}
+    .agent-mic-pulse{position:absolute;inset:-8px;border-radius:50%;border:2px solid var(--orange);opacity:0;transition:all 0.3s;pointer-events:none}
+    .agent-mic.active .agent-mic-pulse{animation:micPulse 1.5s infinite;opacity:1}
+    @keyframes micPulse{0%{transform:scale(1);opacity:.6}100%{transform:scale(1.4);opacity:0}}
+    .agent-hint{margin-top:1rem;font-size:0.8rem;color:var(--text-muted)}
+    .agent-hint kbd{padding:0.15rem 0.4rem;background:var(--bg-soft);border:1px solid var(--border);border-radius:4px;font-family:inherit;font-size:0.75rem}
+    .agent-sidebar{background:var(--bg-soft);border-left:1px solid var(--border);padding:1.5rem;overflow-y:auto;display:flex;flex-direction:column}
+    .sidebar-header{font-size:0.95rem;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:0.5rem}
+    .sidebar-header i{width:18px;height:18px;color:var(--orange)}
+    .inv-item{display:flex;justify-content:space-between;align-items:center;padding:0.625rem 0.875rem;background:#fff;border-radius:8px;margin-bottom:0.375rem;border:1px solid var(--border);font-size:0.9rem;transition:all 0.3s}
+    .inv-item.updating{border-color:var(--orange);background:#FFF8F5}
+    .inv-item.low{border-color:rgba(220,53,69,0.2)}
+    .inv-item-qty{font-weight:600;color:var(--orange)}
+    .inv-item.low .inv-item-qty{color:var(--red)}
+    .sidebar-footer{margin-top:auto;padding-top:1rem;border-top:1px solid var(--border);font-size:0.8rem;color:var(--text-muted);text-align:center}
+
+    /* RESPONSIVE */
+    @media(max-width:968px){
+      .nav-links{display:none}.nav-toggle{display:flex}
+      .nav-links.open{display:flex;flex-direction:column;position:absolute;top:64px;left:0;right:0;background:#fff;padding:1.5rem;border-bottom:1px solid var(--border);box-shadow:0 8px 24px rgba(0,0,0,0.08)}
+      .hero-inner{grid-template-columns:1fr;text-align:center;gap:2rem}
+      .hero-desc{margin-left:auto;margin-right:auto}
+      .hero-buttons{justify-content:center}
+      .hero-proof{justify-content:center}
+      .hero-visual{order:-1}
+      .video-frame{max-width:320px;aspect-ratio:1}
+      .card-grid{grid-template-columns:1fr;max-width:480px;margin:0 auto}
+      .steps{grid-template-columns:1fr;max-width:360px;margin:0 auto;gap:2.5rem}
+      .agent-layout{grid-template-columns:1fr;grid-template-rows:1fr auto}
+      .agent-sidebar{border-left:none;border-top:1px solid var(--border);max-height:260px}
+    }
+    @media(max-width:480px){
+      .hero-title{font-size:2rem}
+      .hero-proof{flex-direction:column;gap:1rem}
+      .hero-buttons{flex-direction:column;width:100%}
+      .btn{width:100%;justify-content:center}
+      .cta-box{margin:0 1rem;border-radius:16px}
+      .video-frame{max-width:280px}
+    }
+  </style>
+</head>
+<body>
+  <!-- LANDING -->
+  <div id="landingPage">
+    <nav class="nav">
+      <div class="container nav-inner">
+        <a href="#" class="nav-logo">Sousy</a>
+        <div class="nav-links" id="navLinks">
+          <a href="#problem">Problem</a>
+          <a href="#solution">Solution</a>
+          <a href="#how">How It Works</a>
+          <button class="nav-cta" onclick="showAgent()">Get Started</button>
+        </div>
+        <button class="nav-toggle" onclick="document.getElementById('navLinks').classList.toggle('open')" aria-label="Menu"><i data-lucide="menu"></i></button>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="container hero-inner">
+        <div class="hero-content">
+          <div class="hero-badge"><span class="badge-dot"></span>Now in Beta</div>
+          <h1 class="hero-title">Your hands are busy.<br><span>Just tell Sousy what changed.</span></h1>
+          <p class="hero-desc">The voice-first AI agent that tracks your kitchen inventory in real-time. No clipboards. No spreadsheets. Just speak.</p>
+          <div class="hero-buttons">
+            <button class="btn btn-primary" onclick="showAgent()">Start Voice Session <i data-lucide="mic"></i></button>
+            <a href="#how" class="btn btn-secondary">See How It Works <i data-lucide="arrow-down"></i></a>
+          </div>
+          <div class="hero-proof">
+            <div><div class="proof-value">40%</div><div class="proof-label">Less Waste</div></div>
+            <div><div class="proof-value">3 sec</div><div class="proof-label">Update Time</div></div>
+            <div><div class="proof-value">0</div><div class="proof-label">Hands Needed</div></div>
+          </div>
+        </div>
+        <div class="hero-visual">
+          <div class="video-frame" id="videoFrame">
+            <div class="video-glow" id="videoGlow"></div>
+            <video autoplay muted loop playsinline id="heroVideo">
+              <source src="https://d8j0ntlcm91z4.cloudfront.net/user_39ca84eAE1ODL9hbR5VhoEj8tBf/hf_20260625_154433_532a85d3-dabf-4265-b8bd-19ac6af31842.mp4" type="video/mp4">
+            </video>
+            <div class="video-label"><span class="dot"></span> SOUSY</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-soft" id="problem">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">The Problem</div>
+          <h2 class="section-title">Kitchen inventory is broken.</h2>
+          <p class="section-desc">Chefs spend hours weekly on tasks that should take minutes.</p>
+        </div>
+        <div class="card-grid">
+          <article class="card"><div class="card-icon orange"><i data-lucide="clipboard-list"></i></div><h3 class="card-title">Manual counting wastes time</h3><p class="card-desc">Your team walks the kitchen with clipboards, counting items by hand.</p><div class="card-stat">4.2 hrs/week average on manual inventory</div></article>
+          <article class="card"><div class="card-icon orange"><i data-lucide="trending-down"></i></div><h3 class="card-title">Food waste kills margins</h3><p class="card-desc">Without real-time tracking, ingredients expire on shelves.</p><div class="card-stat">$25B lost annually to food waste in US</div></article>
+          <article class="card"><div class="card-icon orange"><i data-lucide="alert-triangle"></i></div><h3 class="card-title">Stockouts kill service</h3><p class="card-desc">You 86 a dish mid-service because no one noticed you were out.</p><div class="card-stat">68% understock at least once per week</div></article>
+          <article class="card"><div class="card-icon orange"><i data-lucide="smartphone"></i></div><h3 class="card-title">Apps don't work in kitchens</h3><p class="card-desc">Touching a screen with flour-covered hands? Tools weren't built for kitchens.</p><div class="card-stat">73% of kitchen staff avoid inventory apps</div></article>
+          <article class="card"><div class="card-icon orange"><i data-lucide="users"></i></div><h3 class="card-title">Shift handoffs are chaos</h3><p class="card-desc">The outgoing shift "knows" what's low. The incoming shift guesses.</p><div class="card-stat">42% of errors happen at shift change</div></article>
+          <article class="card"><div class="card-icon orange"><i data-lucide="file-text"></i></div><h3 class="card-title">Spreadsheets aren't solutions</h3><p class="card-desc">You moved from paper to Excel. Same problem, different format.</p><div class="card-stat">89% of spreadsheet systems are abandoned</div></article>
+        </div>
+      </div>
+    </section>
+
+    <section id="solution">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">The Solution</div>
+          <h2 class="section-title">Meet Sousy — your AI sous-chef</h2>
+          <p class="section-desc">Sousy listens, understands, and updates your inventory while you keep cooking.</p>
+        </div>
+        <div class="card-grid">
+          <article class="card"><div class="card-icon solid"><i data-lucide="mic"></i></div><h3 class="card-title">Speak naturally</h3><p class="card-desc">"Used 5 lbs chicken for lunch rush." No special commands needed.</p></article>
+          <article class="card"><div class="card-icon solid"><i data-lucide="zap"></i></div><h3 class="card-title">Instant updates</h3><p class="card-desc">Inventory updates in real-time the moment you speak.</p></article>
+          <article class="card"><div class="card-icon solid"><i data-lucide="bell"></i></div><h3 class="card-title">Smart alerts</h3><p class="card-desc">Sousy alerts you before you run low. Prevent 86'd dishes.</p></article>
+          <article class="card"><div class="card-icon solid"><i data-lucide="bar-chart-3"></i></div><h3 class="card-title">Usage analytics</h3><p class="card-desc">Optimize purchasing with data, not guesswork.</p></article>
+          <article class="card"><div class="card-icon solid"><i data-lucide="users"></i></div><h3 class="card-title">Team sync</h3><p class="card-desc">Everyone sees the same inventory. Seamless shift handoffs.</p></article>
+          <article class="card"><div class="card-icon solid"><i data-lucide="hand"></i></div><h3 class="card-title">Hands-free always</h3><p class="card-desc">Designed for busy kitchens. No screens to touch. Just talk.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="bg-soft" id="how">
+      <div class="container">
+        <div class="section-header">
+          <div class="section-label">How It Works</div>
+          <h2 class="section-title">Three steps. Zero learning curve.</h2>
+        </div>
+        <div class="steps">
+          <div class="step"><div class="step-num">1</div><h3 class="step-title">Say "Hey Sousy"</h3><p class="step-desc">Activate with your voice or tap the mic.</p></div>
+          <div class="step"><div class="step-num">2</div><h3 class="step-title">Tell what changed</h3><p class="step-desc">"Got delivery of 50 cases tomatoes." Speak naturally.</p></div>
+          <div class="step"><div class="step-num">3</div><h3 class="step-title">Stay updated</h3><p class="step-desc">Sousy confirms, updates, and alerts you.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="container">
+        <div class="cta-box">
+          <h2 class="cta-title">Stop counting. Start cooking.</h2>
+          <p class="cta-desc">Join the beta and see why chefs call Sousy "the kitchen assistant I didn't know I needed."</p>
+          <button class="cta-btn" onclick="showAgent()">Try Sousy Free <i data-lucide="arrow-right"></i></button>
+        </div>
+      </div>
+    </section>
+
+    <footer class="footer">
+      <div class="container footer-inner">
+        <div class="footer-logo">Sousy</div>
+        <div class="footer-text">Voice-first kitchen inventory.</div>
+        <div class="footer-links"><a href="#">Privacy</a><a href="#">Terms</a><a href="#">Contact</a></div>
+      </div>
+    </footer>
+  </div>
+
+  <!-- AGENT VIEW -->
+  <div id="agentView">
+    <div class="agent-layout">
+      <div class="agent-main">
+        <button class="agent-back" onclick="hideAgent()"><i data-lucide="arrow-left"></i> Back</button>
+        <div class="agent-avatar">
+          <div class="agent-ring" id="agentRing"></div>
+          <video autoplay muted loop playsinline>
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_39ca84eAE1ODL9hbR5VhoEj8tBf/hf_20260625_154433_532a85d3-dabf-4265-b8bd-19ac6af31842.mp4" type="video/mp4">
+          </video>
+        </div>
+        <div class="agent-status" id="agentStatus">Ready</div>
+        <div class="agent-transcript" id="agentTranscript">Press the mic or hold <strong>Space</strong> to talk</div>
+        <button class="agent-mic" id="agentMic" onclick="toggleMic()" aria-label="Toggle microphone">
+          <div class="agent-mic-pulse"></div>
+          <i data-lucide="mic"></i>
+        </button>
+        <div class="agent-hint">Hold <kbd>Space</kbd> for push-to-talk</div>
+      </div>
+      <aside class="agent-sidebar">
+        <div class="sidebar-header"><i data-lucide="package"></i> Kitchen Inventory</div>
+        <div id="inventoryList">
+          <div class="inv-item" data-item="chicken"><span>Chicken Breast</span><span class="inv-item-qty">23 lbs</span></div>
+          <div class="inv-item" data-item="tomatoes"><span>Tomatoes</span><span class="inv-item-qty">24 lbs</span></div>
+          <div class="inv-item low" data-item="cream"><span>Heavy Cream</span><span class="inv-item-qty">2 qt</span></div>
+          <div class="inv-item" data-item="olive-oil"><span>Olive Oil</span><span class="inv-item-qty">5 L</span></div>
+          <div class="inv-item low" data-item="garlic"><span>Garlic</span><span class="inv-item-qty">3 heads</span></div>
+          <div class="inv-item" data-item="butter"><span>Butter</span><span class="inv-item-qty">8 lbs</span></div>
+          <div class="inv-item" data-item="onions"><span>Onions</span><span class="inv-item-qty">15 lbs</span></div>
+          <div class="inv-item low" data-item="basil"><span>Fresh Basil</span><span class="inv-item-qty">1 bunch</span></div>
+        </div>
+        <div class="sidebar-footer">Updates in real-time as you speak</div>
+      </aside>
+    </div>
+  </div>
+
+  <script>
+    lucide.createIcons();
+
+    // NAV
+    document.querySelectorAll('.nav-links a').forEach(a=>a.addEventListener('click',()=>document.getElementById('navLinks').classList.remove('open')));
+
+    // VIDEO CURSOR TRACKING (MetaMask-style)
+    const videoFrame = document.getElementById('videoFrame');
+    const heroVideo = document.getElementById('heroVideo');
+    const videoGlow = document.getElementById('videoGlow');
+    let tx=0,ty=0,cx=0,cy=0;
+
+    document.addEventListener('mousemove',e=>{
+      const r=videoFrame.getBoundingClientRect();
+      const nx=(e.clientX-(r.left+r.width/2))/(r.width/2);
+      const ny=(e.clientY-(r.top+r.height/2))/(r.height/2);
+      tx=Math.max(-1,Math.min(1,nx));
+      ty=Math.max(-1,Math.min(1,ny));
+      
+      // Glow follows cursor
+      const mx=((e.clientX-r.left)/r.width)*100;
+      const my=((e.clientY-r.top)/r.height)*100;
+      videoGlow.style.setProperty('--mx',mx+'%');
+      videoGlow.style.setProperty('--my',my+'%');
+    });
+
+    (function animate(){
+      const ease=0.06;
+      cx+=(tx-cx)*ease;
+      cy+=(ty-cy)*ease;
+      
+      // Video moves opposite (depth)
+      heroVideo.style.transform=`translate(${cx*-20}px,${cy*-15}px) scale(1.15)`;
+      
+      // Frame tilts
+      videoFrame.style.transform=`perspective(1000px) rotateY(${cx*5}deg) rotateX(${-cy*3}deg)`;
+      
+      requestAnimationFrame(animate);
+    })();
+
+    // SHOW/HIDE AGENT
+    function showAgent(){
+      document.getElementById('landingPage').style.display='none';
+      document.getElementById('agentView').style.display='block';
+      document.body.style.overflow='hidden';
+      lucide.createIcons();
+    }
+    function hideAgent(){
+      document.getElementById('agentView').style.display='none';
+      document.getElementById('landingPage').style.display='block';
+      document.body.style.overflow='';
+      lucide.createIcons();
+    }
+
+    // MIC TOGGLE
+    let isListening=false;
+    function toggleMic(){
+      const mic=document.getElementById('agentMic');
+      const ring=document.getElementById('agentRing');
+      const status=document.getElementById('agentStatus');
+      const transcript=document.getElementById('agentTranscript');
+      isListening=!isListening;
+      
+      if(isListening){
+        mic.classList.add('active');mic.style.background='#00D4AA';mic.style.boxShadow='0 4px 24px rgba(0,212,170,0.4)';
+        ring.style.borderColor='#00D4AA';ring.style.boxShadow='0 0 24px #00D4AA';
+        status.textContent='Listening...';status.style.color='#00D4AA';
+        transcript.innerHTML='<em style="color:var(--text-muted)">Speak now...</em>';
+        
+        setTimeout(()=>{
+          if(!isListening)return;
+          ring.style.borderColor='#FFD93D';ring.style.boxShadow='0 0 24px #FFD93D';
+          status.textContent='Thinking...';status.style.color='#FFD93D';
+          transcript.textContent='"I used 5 pounds of chicken breast for the lunch rush"';
+          
+          setTimeout(()=>{
+            if(!isListening)return;
+            ring.style.borderColor='#6C5CE7';ring.style.boxShadow='0 0 24px #6C5CE7';
+            status.textContent='Speaking...';status.style.color='#6C5CE7';
+            transcript.textContent='"Got it! Updated Chicken Breast from 23 to 18 lbs. Running low — want me to add it to the order list?"';
+            const ci=document.querySelector('[data-item="chicken"]');
+            if(ci){ci.querySelector('.inv-item-qty').textContent='18 lbs';ci.classList.add('updating');setTimeout(()=>ci.classList.remove('updating'),1000)}
+            
+            setTimeout(()=>{
+              ring.style.borderColor='';ring.style.boxShadow='none';
+              mic.style.background='';mic.style.boxShadow='';mic.classList.remove('active');
+              status.textContent='Ready';status.style.color='';
+              transcript.innerHTML='Press the mic or hold <strong>Space</strong> to talk';
+              isListening=false;
+            },4000);
+          },1500);
+        },2000);
+      }else{
+        mic.classList.remove('active');mic.style.background='';mic.style.boxShadow='';
+        ring.style.borderColor='';ring.style.boxShadow='none';
+        status.textContent='Ready';status.style.color='';
+        transcript.innerHTML='Press the mic or hold <strong>Space</strong> to talk';
+      }
+    }
+    document.addEventListener('keydown',e=>{
+      if(e.code==='Space'&&!isListening&&!e.repeat&&document.getElementById('agentView').style.display==='block'){e.preventDefault();toggleMic()}
+    });
+  </script>
+</body>
+</html>
