@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import SousyAvatar from '@shared/components/SousyAvatar.svelte';
   import { sendToAgent } from '@lib/api';
   import { loadInventory, saveInventory, seedInventory } from '@lib/inventory';
   import type { AgentState, ChatTurn, InventoryItem } from '../../types';
@@ -214,7 +213,9 @@
 <div class="voice-agent">
   <!-- Avatar Section -->
   <div class="avatar-section">
-    <SousyAvatar state={agentState} size={240} />
+    <div class="avatar-placeholder">
+      <span class="avatar-state">{statusText}</span>
+    </div>
   </div>
   
   <!-- Status Section -->

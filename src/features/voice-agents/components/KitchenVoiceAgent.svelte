@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount, onDestroy } from 'svelte';
-  import SousyAvatar from '@shared/components/SousyAvatar.svelte';
   import type { AgentState, InventoryItem } from '../../../types';
   import { loadInventory, saveInventory, seedInventory } from '@lib/inventory';
 
@@ -357,9 +356,11 @@
   <div class="sousy-layout" class:inventory-open={showInventory}>
     <!-- Main Voice Area -->
     <main class="voice-main">
-      <!-- Avatar -->
+      <!-- Avatar placeholder -->
       <div class="avatar-wrap">
-        <SousyAvatar state={agentState} size={180} />
+        <div class="avatar-placeholder">
+          <span class="avatar-state">{statusText}</span>
+        </div>
       </div>
 
       <!-- Status -->
@@ -576,6 +577,23 @@
     opacity: 0.3;
     pointer-events: none;
     z-index: -1;
+  }
+  .avatar-placeholder {
+    width: 180px;
+    height: 180px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--sousy-orange), var(--sousy-orange-light));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 40px var(--sousy-orange-glow);
+  }
+  .avatar-state {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
   .status-text {
     font-size: 0.8rem;
