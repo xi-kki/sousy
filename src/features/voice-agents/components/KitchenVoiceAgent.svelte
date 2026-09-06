@@ -341,7 +341,7 @@
           <text x="45" y="62" font-family="Inter Tight, sans-serif" font-weight="600" font-size="52" fill="white" letter-spacing="-0.04em">SOUSY</text>
         </svg>
       </div>
-      <span class="badge">AI SOUS-CHEF</span>
+      <span class="badge">AI SOUS‑CHEF</span>
     </div>
     <div class="header-right">
       <button class="icon-btn" onclick={clearChat} title="Clear chat">
@@ -365,7 +365,6 @@
 
       <!-- Status -->
       <p class="status-text" class:active={agentState !== 'idle'}>{statusText}</p>
-
       <!-- Error -->
       {#if error}
         <div class="error-banner">
@@ -417,32 +416,31 @@
         </button>
         <p class="mic-hint">
           {#if agentState === 'idle'}Hold <kbd>Space</kbd> or tap to talk
-          {:else if agentState === 'listening'}Listening...
-          {:else if agentState === 'thinking'}Processing...
+          {:else if agentState === 'listening'}Hearing you...
+          {:else if agentState === 'thinking'}Thinking...
           {:else}Sousy is speaking...{/if}
         </p>
       </div>
 
       <!-- Quick Actions -->
       <div class="quick-actions">
-        <button class="action-chip" onclick={() => quickAction("What's expiring soon?")}>🗓️ Expiring</button>
+        <button class="action-chip" onclick={() => quickAction("What&apos;s expiring soon?")}>🗓️ Expiring</button>
         <button class="action-chip" onclick={() => quickAction("What do we have in stock?")}>📦 Stock</button>
         <button class="action-chip" onclick={() => quickAction("Suggest a dish using what expires first")}>🍳 Suggest</button>
         <button class="action-chip" onclick={() => quickAction("I just used 2kg chicken thigh")}>➖ Used</button>
       </div>
     </main>
 
-    <!-- Inventory Sidebar -->
     <aside class="inventory-sidebar" class:show={showInventory}>
       <div class="sidebar-header">
-        <h2>📦 Inventory</h2>
+        <h2>Inventory</h2>
         <span class="item-count">{inventory.length} items</span>
       </div>
 
       {#if expiringItems.length > 0}
         <div class="expiry-alert">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><path d="M12 9v4m0 4h.01"/></svg>
-          <span>{expiringItems.length} item{expiringItems.length > 1 ? 's' : ''} expiring soon</span>
+          <span>{expiringItems.length} item{expiringItems.length > 1 ? 's' : ''} need attention</span>
         </div>
       {/if}
 
@@ -466,8 +464,8 @@
         {:else}
           <div class="empty-state">
             <div class="empty-icon">📦</div>
-            <p>Nothing in inventory yet.</p>
-            <p class="empty-hint">Say: "I have 5kg salmon" to add items.</p>
+            <p>Nothing logged yet.</p>
+            <p class="empty-hint">Say: &ldquo;I have 5kg salmon&rdquo; to add your first item.</p>
           </div>
         {/each}
       </div>
