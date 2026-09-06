@@ -1,5 +1,6 @@
-@import 'tailwindcss';
-
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
 :root {
   --sousy-orange: #FF6B35;
   --sousy-orange-light: #FF8C5A;
