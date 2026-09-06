@@ -247,7 +247,7 @@ const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 const llmConfig = {
   apiKey: process.env.GROQ_API_KEY,
   baseUrl: 'https://api.groq.com/openai/v1',
-  model: 'llama-3.1-70b-versatile',
+  model: 'llama-3.1-8b-instant',
 };
 
 export default async function handler(req, res) {
